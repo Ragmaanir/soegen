@@ -4,6 +4,11 @@ version: 0.1.0
 authors:
   - ragmaanir <ragmaanir@gmail.com>
 
+dependencies:
+  besked:
+    github: ragmaanir/besked
+    #version: ~> 0.1
+
 development_dependencies:
   minitest:
     github: ysbaddaden/minitest.cr
@@ -11,8 +16,5 @@ development_dependencies:
   power_assert:
     github: rosylilly/power_assert.cr
     version: ~> 0.2.2
-  besked:
-    github: ragmaanir/besked
-    version: ~> 0.1
 
 license: MIT

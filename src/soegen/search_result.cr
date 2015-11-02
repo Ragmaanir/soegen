@@ -13,7 +13,7 @@ module Soegen
     class Hits
       JSON.mapping({
         "total" : Int32,
-        "max_score" : Float64,
+        "max_score" : {type: Float64, nilable: true},
         "hits" : JSON::Any
       })
     end
@@ -37,6 +37,6 @@ module Soegen
     def hits
       @internal.hits.hits as Array(JSON::Type)
     end
-    
+
   end
 end
