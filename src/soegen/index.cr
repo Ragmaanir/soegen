@@ -30,8 +30,7 @@ module Soegen
       if response.ok_ish?
         SearchResult.new(response)
       else
-        #raise Server::RequestError.new(request, response)
-        raise "aaa"
+        raise RequestError.new(response)
       end
     end
 

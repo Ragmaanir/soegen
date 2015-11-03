@@ -26,7 +26,7 @@ module Soegen
       })
     end
 
-    def initialize(@response : Response)
+    def initialize(@response : CompletedRequest)
       @internal = Internal.from_json(@response.body)
     end
 

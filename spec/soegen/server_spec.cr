@@ -30,11 +30,14 @@ module SoegenTests
     end
 
     def test_search_error
-      skip
       server = Soegen::Server.new
 
       idx = server.index("not_real")
       idx.search(%("query": {"match_all":{}}))
+    rescue Soegen::RequestError
+      assert true
+    else
+      assert false
     end
 
     def test_stats

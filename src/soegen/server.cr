@@ -6,20 +6,20 @@ require "besked"
 
 module Soegen
 
+  class RequestError < Exception
+    def initialize(@response : CompletedRequest)
+      super("Request failed: #{response.request.method} #{response.request.path} with #{response.status_code} #{response.body}")
+    end
+  end
+
   VERBS = %w{GET POST PUT HEAD DELETE}
 
   class Server
 
     class RequestEvent < Besked::Event
-      getter request, response, timing
+      getter response, timing
 
-      def initialize(@request, @response, @timing)
-      end
-    end
-
-    class RequestError < Exception
-      def initialize(@request : HTTP::Request, @response : Response)
-        super("Request failed: #{request.method} #{request.path} with #{response.status_code} #{response.body}")
+      def initialize(@response : CompletedRequest, @timing)
       end
     end
 
@@ -75,8 +75,7 @@ module Soegen
       response = request(:get, "_search", json_query)
 
       if !response.ok_ish?
-        #raise RequestError.new(request, response)
-        raise "aaa"
+        raise RequestError.new(response)
       end
 
       SearchResult.new(response)
@@ -91,11 +90,11 @@ module Soegen
 
       timing, response = timed do
         raw_response = @client.exec(request)
-        Response.new(raw_response)
+        CompletedRequest.new(request, raw_response)
       end
 
       log_debug("[#{timing.duration.milliseconds}ms] Request #{method} #{path}")
-      Besked::Global.publish(Soegen::Server, "request", RequestEvent.new(request, response, timing))
+      Besked::Global.publish(Soegen::Server, "request", RequestEvent.new(response, timing))
       response
     end
 
