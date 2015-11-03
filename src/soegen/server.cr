@@ -67,10 +67,6 @@ module Soegen
       request(:get, "_stats")
     end
 
-    # def status
-    #   request(:get, "_status")
-    # end
-
     def bulk(data)
       request(:post, "_bulk", {} of String => String, data)
     end
@@ -98,7 +94,7 @@ module Soegen
         Response.new(raw_response)
       end
 
-      logger.debug("[Soegen][#{timing.duration.milliseconds}ms] Request #{method} #{path}")
+      log_debug("[#{timing.duration.milliseconds}ms] Request #{method} #{path}")
       Besked::Global.publish(Soegen::Server, "request", RequestEvent.new(request, response, timing))
       response
     end
@@ -118,6 +114,10 @@ module Soegen
       start = Time.new
       result = yield
       Tuple.new(Timing.new(start, Time.new), result)
+    end
+
+    private def log_debug(message)
+      logger.debug(message, "Soegen")
     end
   end
 

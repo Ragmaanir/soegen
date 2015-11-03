@@ -43,12 +43,6 @@ module SoegenTests
       assert res.ok_ish?
     end
 
-    # def test_status
-    #   server = Soegen::Server.new
-    #   res = server.status
-    #   assert res.ok_ish?
-    # end
-
     def test_bulk
       skip
     end
