@@ -1,5 +1,5 @@
 module Soegen
-  class IndexType
+  class IndexType < Component
     getter index, name
 
     def initialize(@index : Index, @name : String)
@@ -13,11 +13,11 @@ module Soegen
     end
 
     def explain(id, query, options)
-      request(:get, "#{id}/_explain", options, query)
+      request!(:get, "#{id}/_explain", options, query)
     end
 
     def put(id, source, options)
-      request(:put, id, options, source)
+      request!(:put, id, options, source)
     end
 
     def post(source : String, options={} of String => String)
@@ -34,17 +34,13 @@ module Soegen
     def delete
     end
 
-    private def request!(*args)
-      response = request(*args)
-
-      if !response.ok_ish?
-        raise RequestError.new(response)
-      end
+    def uri_path(path : String)
+      index.uri_path("#{name}/#{path}")
     end
 
-    private def request(method : Symbol, path = "" : String, *args)
-      path = "#{name}/#{path}"
-      index.request(method, path, *args)
+    private def server
+      index.server
     end
+
   end
 end

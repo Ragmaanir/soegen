@@ -14,7 +14,7 @@ module Soegen
 
   VERBS = %w{GET POST PUT HEAD DELETE}
 
-  class Server
+  class Server < Component
 
     class RequestEvent < Besked::Event
       getter response, timing
@@ -52,7 +52,7 @@ module Soegen
     end
 
     def refresh
-      request(:post, "_refresh")
+      request!(:post, "_refresh")
     end
 
     def up?
@@ -66,21 +66,11 @@ module Soegen
     end
 
     def stats
-      request(:get, "_stats")
+      request!(:get, "_stats")
     end
 
     def bulk(data)
       request!(:post, "_bulk", {} of String => String, data)
-    end
-
-    def search(hash)
-      search(hash.to_json)
-    end
-
-    def search(json_query : String)
-      response = request!(:get, "_search", {} of String => String, json_query)
-
-      SearchResult.new(response)
     end
 
     def request(method : Symbol, path, params={} of String => String, body = "" : String)
@@ -100,16 +90,6 @@ module Soegen
       response
     end
 
-    def request!(*args)
-      response = request(*args)
-
-      if !response.ok_ish?
-        raise RequestError.new(response)
-      end
-
-      response
-    end
-
     class Timing
       getter start_time, end_time
 
@@ -125,6 +105,10 @@ module Soegen
       start = Time.new
       result = yield
       Tuple.new(Timing.new(start, Time.new), result)
+    end
+
+    def uri_path(path : String)
+      path
     end
 
     private def log_debug(message)
