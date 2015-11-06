@@ -34,6 +34,14 @@ module Soegen
       @internal.hits.total
     end
 
+    def none?
+      !present?
+    end
+
+    def present?
+      total_count > 0
+    end
+
     def hits
       @internal.hits.hits as Array(JSON::Type)
     end

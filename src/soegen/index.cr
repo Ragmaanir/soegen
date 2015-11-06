@@ -18,18 +18,30 @@ module Soegen
     end
 
     def refresh
-      request(:post, "_refresh")
+      request!(:post, "_refresh")
     end
 
     def type(name : String)
       IndexType.new(self, name)
     end
 
-    def search(json_query)
-      response = request(:get, "_search", json_query)
+    def search(hash)
+      search(hash.to_json)
+    end
+
+    def search(json_query : String)
+      response = request(:get, "_search", {} of String => String, json_query)
       if response.ok_ish?
         SearchResult.new(response)
       else
+        raise RequestError.new(response)
+      end
+    end
+
+    def request!(*args)
+      response = request(*args)
+
+      if !response.ok_ish?
         raise RequestError.new(response)
       end
     end

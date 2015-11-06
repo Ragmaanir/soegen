@@ -57,6 +57,8 @@ module Soegen
 
     def up?
       request(:get, "/").ok_ish?
+    rescue e : Errno
+      false
     end
 
     def index(name : String)
@@ -68,15 +70,15 @@ module Soegen
     end
 
     def bulk(data)
-      request(:post, "_bulk", {} of String => String, data)
+      request!(:post, "_bulk", {} of String => String, data)
     end
 
-    def search(json_query)
-      response = request(:get, "_search", json_query)
+    def search(hash)
+      search(hash.to_json)
+    end
 
-      if !response.ok_ish?
-        raise RequestError.new(response)
-      end
+    def search(json_query : String)
+      response = request!(:get, "_search", {} of String => String, json_query)
 
       SearchResult.new(response)
     end
@@ -93,8 +95,18 @@ module Soegen
         CompletedRequest.new(request, raw_response)
       end
 
-      log_debug("[#{timing.duration.milliseconds}ms] Request #{method} #{path}")
+      log_debug("[#{timing.duration.milliseconds}ms] #{response.status_code} Request #{method} #{path} #{params} '#{body}'")
       Besked::Global.publish(Soegen::Server, "request", RequestEvent.new(response, timing))
+      response
+    end
+
+    def request!(*args)
+      response = request(*args)
+
+      if !response.ok_ish?
+        raise RequestError.new(response)
+      end
+
       response
     end
 

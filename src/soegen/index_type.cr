@@ -20,14 +20,26 @@ module Soegen
       request(:put, id, options, source)
     end
 
-    def post(source, options={} of String => String)
-      request(:post, "", options, source)
+    def post(source : String, options={} of String => String)
+      request!(:post, "", options, source)
+    end
+
+    def post(source, *args)
+      post(source.to_json, *args)
     end
 
     def update
     end
 
     def delete
+    end
+
+    private def request!(*args)
+      response = request(*args)
+
+      if !response.ok_ish?
+        raise RequestError.new(response)
+      end
     end
 
     private def request(method : Symbol, path = "" : String, *args)
