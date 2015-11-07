@@ -3,12 +3,16 @@ require "../src/soegen"
 require "minitest"
 require "power_assert"
 
+ES_PORT = 9200
+
 class SoegenTests::Test < Minitest::Test
+
   private def server
-    @server ||= Soegen::Server.new
+    @server.not_nil!
   end
 
   def setup
+    @server = Soegen::Server.new("localhost", ES_PORT, read_timeout: 1.second, connect_timeout: 1.second)
     server.index("_all").delete
   end
 
@@ -18,7 +22,7 @@ class SoegenTests::Test < Minitest::Test
 end
 
 if !Soegen::Server.new.up?
-  raise "The test suite requires a running elasticsearch client on port 9200"
+  raise "The test suite requires a running elasticsearch client on port #{ES_PORT}"
 end
 
 require "minitest/autorun"

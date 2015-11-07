@@ -1,0 +1,18 @@
+cluster.name: es_soegen_2_0_0_test
+cluster.routing.allocation.disk.watermark.low: 500mb
+cluster.routing.allocation.disk.watermark.high: 200mb
+
+node.name: main_test
+node.max_local_storage_nodes: 1
+
+index.number_of_shards: 1
+index.number_of_replicas: 0
+index.stores.type: memory
+
+network.host: 127.0.0.1
+http.port: 9200
+
+gateway.recover_after_nodes: 1
+
+discovery.zen.minimum_master_nodes: 1
+discovery.zen.ping.unicast.hosts: []

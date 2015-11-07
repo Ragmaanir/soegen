@@ -12,20 +12,24 @@ module SoegenTests
 
     def test_create_with_settings
       idx = server.index("test")
-      idx.create({
+      config = {
         mappings: {
           mytype: {
             properties: {
-              myfield: {type: "String"}
+              myfield: {type: "string"}
             }
           }
         }
-      })
+      }
+      idx.create(config)
+
+      assert idx.get_mapping.body == {test: config}.to_json
     end
 
     def test_type
       idx = server.index("test")
-      events = idx.type("events")
+      t = idx.type("events")
+      assert t.name == "events"
     end
 
     def test_search
