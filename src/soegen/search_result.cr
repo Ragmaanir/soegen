@@ -14,7 +14,17 @@ module Soegen
       JSON.mapping({
         "total" : Int32,
         "max_score" : {type: Float64, nilable: true},
-        "hits" : JSON::Any
+        "hits" : Array(Hit)
+      })
+    end
+
+    class Hit
+      JSON.mapping({
+        "_index" : String,
+        "_type" : String,
+        "_id" : String,
+        "_score" : Float64,
+        "_source" :  JSON::Any
       })
     end
 
@@ -42,8 +52,12 @@ module Soegen
       total_count > 0
     end
 
+    def raw_hits
+      @internal.hits.hits
+    end
+
     def hits
-      @internal.hits.hits as Array(JSON::Type)
+      raw_hits.map{ |hit| hit._source as Hash(String, JSON::Type) }
     end
 
   end

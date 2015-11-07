@@ -49,9 +49,8 @@ module SoegenTests
 
       assert results.total_count > 0
       assert !results.hits.empty?
-      hit = results.hits.first as Hash(String, JSON::Type)
-      source = hit["_source"] as Hash(String, JSON::Type)
-      assert source["data"] == time
+      hit = results.hits.first
+      assert hit["data"] == time
     end
   end
 end

@@ -1,6 +1,6 @@
 # soegen
 
-ElasticSearch client for crystal based on Stretcher gem for ruby.
+ElasticSearch client for crystal based on the Stretcher gem for ruby.
 
 ## Installation
 
@@ -20,26 +20,26 @@ dependencies:
 ```crystal
 require "soegen"
 
-server = Soegen::Server.new
+server = Soegen::Server.new # defaults to localhost:9200
 idx = server.index("test")
 
 assert !idx.exists?
 
-idx.create({} of String => JSON::Any)
+idx.create
 
 assert idx.exists?
 
-results = idx.search(%("query": {"match_all":{}}))
+t = idx.type("events")
 
-assert results.total_count == 0
+t.post({data: "1337"})
+
+idx.refresh
+
+results = t.search({query: {match: {data: "1337"}}})
+
+assert results.total_count == 1
+assert results.hits.first["data"] == "1337"
 ```
-
-
-TODO: Write usage instructions here
-
-## Development
-
-TODO: Write development instructions here
 
 ## Contributing
 
