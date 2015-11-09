@@ -4,10 +4,10 @@ version: 0.1.0
 authors:
   - ragmaanir <ragmaanir@gmail.com>
 
-dependencies:
-  besked:
-    github: ragmaanir/besked
-    #version: ~> 0.1
+# dependencies:
+#   besked:
+#     github: ragmaanir/besked
+#     #version: ~> 0.1
 
 development_dependencies:
   minitest:

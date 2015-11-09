@@ -2,8 +2,6 @@ require "uri"
 require "http/client"
 require "logger"
 
-require "besked"
-
 module Soegen
 
   class RequestError < Exception
@@ -15,13 +13,6 @@ module Soegen
   VERBS = %w{GET POST PUT HEAD DELETE}
 
   class Server < Component
-
-    class RequestEvent < Besked::Event
-      getter response, timing
-
-      def initialize(@response : CompletedRequest, @timing)
-      end
-    end
 
     REQUEST_HEADERS = {
       "accept" => "application/json",
@@ -49,6 +40,9 @@ module Soegen
     end
 
     def initialize(@client : HTTP::Client, @logger = Logger.new(STDOUT))
+    end
+
+    def request_callback(&@callback : (CompletedRequest, Timing) -> T)
     end
 
     def refresh
@@ -86,18 +80,13 @@ module Soegen
       end
 
       log_debug("[#{timing.duration.milliseconds}ms] #{response.status_code} Request #{method} #{path} #{params} '#{body}'")
-      Besked::Global.publish(Soegen::Server, "request", RequestEvent.new(response, timing))
+      invoke_callback(response, timing)
       response
     end
 
-    class Timing
-      getter start_time, end_time
-
-      def initialize(@start_time, @end_time)
-      end
-
-      def duration
-        end_time - start_time
+    private def invoke_callback(*args)
+      if c = @callback
+        c.call(*args)
       end
     end
 

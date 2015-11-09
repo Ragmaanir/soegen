@@ -72,11 +72,23 @@ module SoegenTests
       assert response.total_count == 2
     end
 
-    def is_up
+    def test_is_up
       server = Soegen::Server.new("http://localhost:9000")
       assert !server.up?
       server = Soegen::Server.new("http://localhost:#{ES_PORT}")
       assert server.up?
+    end
+
+    def test_callback
+      i = 0
+      server.request_callback do |req|
+        i = i+1
+      end
+
+      server.up?
+      server.index("test").create
+
+      assert i == 2
     end
   end
 end
