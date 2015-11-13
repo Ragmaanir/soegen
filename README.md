@@ -2,8 +2,11 @@
 
 ElasticSearch client for crystal based on the Stretcher gem for ruby.
 
-## Installation
+## Compatibility
 
+Tests pass with crystal 0.9 and 0.9.1.
+
+## Installation
 
 Add this to your application's `shard.yml`:
 
@@ -13,9 +16,7 @@ dependencies:
     github: ragmaanir/soegen
 ```
 
-
 ## Usage
-
 
 ```crystal
 require "soegen"
@@ -40,6 +41,24 @@ results = t.search({query: {match: {data: "1337"}}})
 assert results.total_count == 1
 assert results.hits.first["data"] == "1337"
 ```
+
+For more documentation you can also look at the tests, they are pretty easy to understand.
+
+## TODO
+
+- [x] Indexes and IndexTypes: CRUD
+- [x] Index documents
+- [x] Index documents in bulk
+- [x] Search for documents and return hit array
+- [x] Log requests (as curl commands)
+- [x] General callback for each request (for e.g. instrumentation)
+- [ ] Analyzer API
+- [ ] Alias API
+- [ ] Tests for child documents
+
+## Missing a feature? Found a bug? Need more documentation?
+
+Please open an issue on this project.
 
 ## Contributing
 
