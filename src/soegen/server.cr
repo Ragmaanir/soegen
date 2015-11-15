@@ -50,7 +50,7 @@ module Soegen
     end
 
     def up?
-      request(:get, "/").ok_ish?
+      request(:get, "").ok_ish?
     rescue e : Errno
       false
     end
@@ -73,15 +73,51 @@ module Soegen
       headers = HTTP::Headers.new
       headers.merge!(REQUEST_HEADERS)
       request = HTTP::Request.new(method, path, headers, body)
+      request.query = params_to_query_params(params)
 
       timing, response = timed do
         raw_response = @client.exec(request)
         CompletedRequest.new(request, raw_response)
       end
 
-      log_debug("[#{timing.duration.milliseconds}ms] #{response.status_code} Request #{method} #{path} #{params} '#{body}'")
+      log_request(response, timing)
       invoke_callback(response, timing)
       response
+    end
+
+    def uri
+      scheme = "http"
+      scheme += "s" if client.ssl?
+      "#{scheme}://#{client.host}:#{client.port}"
+    end
+
+    private def log_request(response, timing)
+      str = "[%3dms] %3d: %s" % Tuple.new(
+        timing.duration.milliseconds,
+        response.status_code,
+        to_curl(response.request)
+      )
+
+      log_debug(str)
+    end
+
+    private def params_to_query_params(hash : Hash(String,String))
+      hash.map{ |k,v| "#{URI.escape(k)}=#{URI.escape(v)}" }.join("&")
+    end
+
+    private def to_curl(request : HTTP::Request)
+      method = request.method
+      path = request.path || ""
+      params = request.query_params.to_s
+      params = "?" + params if !params.empty?
+
+      body = if !request.body.empty?
+        "-d '#{request.body}'"
+      else
+        ""
+      end
+
+      "curl -X#{method} #{join_path(uri, path)}#{params} #{body}"
     end
 
     private def invoke_callback(*args)

@@ -57,7 +57,7 @@ module Soegen
     end
 
     def uri_path(path : String)
-      index.uri_path("#{name}/#{path}")
+      index.uri_path(join_path(name, path))
     end
 
     private def server

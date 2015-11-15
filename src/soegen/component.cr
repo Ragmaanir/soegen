@@ -27,5 +27,14 @@ module Soegen
     end
 
     private abstract def server : Server
+
+    # Dont put a / at the end if child is empty, so that parameters can be appended with ?
+    private def join_path(parent : String, child : String)
+      if child.empty?
+        parent
+      else
+        [parent,child].join("/")
+      end
+    end
   end
 end
