@@ -111,10 +111,9 @@ module Soegen
       params = request.query_params.to_s
       params = "?" + params if !params.empty?
 
-      body = if !request.body.empty?
-        "-d '#{request.body}'"
-      else
-        ""
+      body = case request.body
+        when nil, "" then ""
+        else "-d '#{request.body}'"
       end
 
       "curl -X#{method} #{join_path(uri, path)}#{params} #{body}"
