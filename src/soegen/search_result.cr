@@ -60,5 +60,9 @@ module Soegen
       raw_hits.map{ |hit| hit._source as Hash(String, JSON::Type) }
     end
 
+    def raw
+      JSON.parse(@response.body) as Hash(String, JSON::Type)
+    end
+
   end
 end
