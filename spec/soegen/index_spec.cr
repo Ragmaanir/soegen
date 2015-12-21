@@ -51,6 +51,11 @@ module SoegenTests
       assert !results.hits.empty?
       hit = results.hits.first
       assert hit["data"] == time
+
+      assert !results.raw.empty?
+      ["took","_shards","hits"].each do |key|
+        assert !results.raw[key].nil?
+      end
     end
   end
 end
