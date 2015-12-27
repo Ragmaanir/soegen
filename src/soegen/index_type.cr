@@ -22,13 +22,13 @@ module Soegen
     def get?(id)
       response = request(:get, id)
       if response.ok_ish?
-        JsonDocument.from_json(response.body)._source.not_nil!
+        JsonDocument.from_json(response.body)._source.not_nil!.as_h
       end
     end
 
     def get(id)
       response = request!(:get, id)
-      JsonDocument.from_json(response.body)._source.not_nil!
+      JsonDocument.from_json(response.body)._source.not_nil!.as_h
     end
 
     def explain(id, query, options = {} of String => String)

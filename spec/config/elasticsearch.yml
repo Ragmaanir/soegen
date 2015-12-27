@@ -10,7 +10,7 @@ index.number_of_replicas: 0
 index.stores.type: memory
 
 network.host: 127.0.0.1
-http.port: 9200
+http.port: 9500
 
 gateway.recover_after_nodes: 1
 

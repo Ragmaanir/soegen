@@ -1,5 +1,5 @@
 name: soegen
-version: 0.1.1
+version: 0.2.0
 
 authors:
   - ragmaanir <ragmaanir@gmail.com>
@@ -12,7 +12,7 @@ authors:
 development_dependencies:
   minitest:
     github: ysbaddaden/minitest.cr
-    version: ~> 0.1.5
+    version: ~> 0.2
   power_assert:
     github: rosylilly/power_assert.cr
     version: ~> 0.2.2

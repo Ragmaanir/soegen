@@ -57,11 +57,11 @@ module Soegen
     end
 
     def hits
-      raw_hits.map{ |hit| hit._source as Hash(String, JSON::Type) }
+      raw_hits.map{ |hit| hit._source.as_h }
     end
 
     def raw
-      JSON.parse(@response.body) as Hash(String, JSON::Type)
+      JSON.parse(@response.body).as_h
     end
 
   end
