@@ -91,6 +91,10 @@ module Soegen
       "#{scheme}://#{client.host}:#{client.port}"
     end
 
+    def server
+      self
+    end
+
     private def log_request(response, timing)
       str = "[%3dms] %3d: %s" % Tuple.new(
         timing.duration.milliseconds,

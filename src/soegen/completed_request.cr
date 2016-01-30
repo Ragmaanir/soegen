@@ -8,7 +8,7 @@ module Soegen
     delegate status_code, response
     delegate body, response
 
-    def initialize(@request : HTTP::Request, @response : HTTP::Response)
+    def initialize(@request : HTTP::Request, @response : HTTP::Client::Response)
     end
 
     def ok_ish?
