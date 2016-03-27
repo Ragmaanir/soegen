@@ -12,7 +12,7 @@ module Soegen
       SearchResult.new(response)
     end
 
-    def request(method : Symbol, path = "" : String, params={} of String => String, body = "" : String)
+    def request(method : Symbol, path : String = "", params={} of String => String, body : String = "")
       server.request(method, uri_path(path), params, body)
     end
 

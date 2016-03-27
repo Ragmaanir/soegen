@@ -11,10 +11,10 @@ authors:
 
 development_dependencies:
   minitest:
-    github: ysbaddaden/minitest.cr
-    version: ~> 0.3
+    github: ragmaanir/minitest.cr
+    branch: master
   power_assert:
     github: ragmaanir/power_assert.cr
-    branch: ahead
+    version: ~> 0.2.4
 
 license: MIT
