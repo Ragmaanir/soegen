@@ -1,6 +1,7 @@
 module Soegen
   class Timing
-    getter start_time, end_time
+    getter start_time : Time
+    getter end_time : Time
 
     def initialize(@start_time, @end_time)
     end
