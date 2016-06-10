@@ -20,7 +20,10 @@ module Soegen
       "Content-Type" => "application/json"
     }
 
+    alias Callback = (CompletedRequest, Timing) ->
+
     getter client, logger
+    getter callback : Callback?
 
     def initialize(uri : String = "http://localhost:9200", *args)
       parsed = URI.parse(uri)
@@ -42,7 +45,7 @@ module Soegen
     def initialize(@client : HTTP::Client, @logger = Logger.new(STDOUT))
     end
 
-    def request_callback(&@callback : (CompletedRequest, Timing) -> T)
+    def request_callback(&@callback : Callback)
     end
 
     def refresh
