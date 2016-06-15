@@ -3,21 +3,19 @@ require "http/client"
 require "logger"
 
 module Soegen
-
   class RequestError < Exception
     def initialize(@response : CompletedRequest)
       super("Request failed: #{response.request.method} #{response.request.path} with #{response.status_code} #{response.body}")
     end
   end
 
-  VERBS = %w{GET POST PUT HEAD DELETE}
+  VERBS = %w(GET POST PUT HEAD DELETE)
 
   class Server < Component
-
     REQUEST_HEADERS = {
-      "accept" => "application/json",
-      "user_agent" => "Soegen #{Soegen::VERSION}",
-      "Content-Type" => "application/json"
+      "accept"       => "application/json",
+      "user_agent"   => "Soegen #{Soegen::VERSION}",
+      "Content-Type" => "application/json",
     }
 
     alias Callback = (CompletedRequest, Timing) ->
@@ -30,12 +28,12 @@ module Soegen
       initialize(parsed.host.not_nil!, parsed.port.not_nil!, parsed.scheme == "https", *args)
     end
 
-    def initialize( host : String,
-                    port : Int32,
-                    ssl : Bool = false,
-                    read_timeout : Time::Span = 2.seconds,
-                    connect_timeout : Time::Span = 5.seconds,
-                    logger : Logger = Logger.new(STDOUT))
+    def initialize(host : String,
+                   port : Int32,
+                   ssl : Bool = false,
+                   read_timeout : Time::Span = 2.seconds,
+                   connect_timeout : Time::Span = 5.seconds,
+                   logger : Logger = Logger.new(STDOUT))
       client = HTTP::Client.new(host, port, ssl)
       client.connect_timeout = connect_timeout
       client.read_timeout = read_timeout
@@ -67,10 +65,10 @@ module Soegen
     end
 
     def bulk(data : Array(T))
-      request!(:post, "_bulk", {} of String => String, data.map{ |e| e.to_json + "\n"}.join)
+      request!(:post, "_bulk", {} of String => String, data.map { |e| e.to_json + "\n" }.join)
     end
 
-    def request(method : Symbol, path, params={} of String => String, body : String = "")
+    def request(method : Symbol, path, params = {} of String => String, body : String = "")
       method = method.to_s.upcase
       raise ArgumentError.new("Invalid http verb: #{method}") unless VERBS.includes?(method)
       headers = HTTP::Headers.new
@@ -90,7 +88,7 @@ module Soegen
 
     def uri
       scheme = "http"
-      scheme += "s" if client.ssl?
+      scheme += "s" if client.tls?
       "#{scheme}://#{client.host}:#{client.port}"
     end
 
@@ -108,8 +106,8 @@ module Soegen
       log_debug(str)
     end
 
-    private def params_to_query_params(hash : Hash(String,String))
-      hash.map{ |k,v| "#{URI.escape(k)}=#{URI.escape(v)}" }.join("&")
+    private def params_to_query_params(hash : Hash(String, String))
+      hash.map { |k, v| "#{URI.escape(k)}=#{URI.escape(v)}" }.join("&")
     end
 
     private def to_curl(request : HTTP::Request)
@@ -119,9 +117,9 @@ module Soegen
       params = "?" + params if !params.empty?
 
       body = case request.body
-        when nil, "" then ""
-        else "-d '#{request.body}'"
-      end
+             when nil, "" then ""
+             else              "-d '#{request.body}'"
+             end
 
       "curl -X#{method} #{join_path(uri, path)}#{params} #{body}"
     end
@@ -146,5 +144,4 @@ module Soegen
       logger.debug(message, "Soegen")
     end
   end
-
 end

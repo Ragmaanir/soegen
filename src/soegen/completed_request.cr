@@ -3,10 +3,8 @@ require "json"
 module Soegen
   class CompletedRequest
     getter response, request
-    delegate method, request
-    delegate path, request
-    delegate status_code, response
-    delegate body, response
+    delegate method, path, to: request
+    delegate status_code, body, to: response
 
     def initialize(@request : HTTP::Request, @response : HTTP::Client::Response)
     end

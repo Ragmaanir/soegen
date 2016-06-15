@@ -15,7 +15,7 @@ describe Soegen::Server do
     assert server.client.host == "localhost"
     assert server.client.port == ES_PORT + 1
     assert server.logger == logger
-    assert !server.client.ssl?
+    assert !server.client.tls?
     # FIXME missing crystal api
     # assert server.client.read_timeout == 10.seconds
     # assert server.client.connect_timeout == 20.seconds
