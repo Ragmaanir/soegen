@@ -24,13 +24,13 @@ describe Soegen::Server do
   end
 
   test "index" do
-    idx = server.index("test")
+    idx = server.index(INDEX_NAME)
     assert idx
-    assert idx.name == "test"
+    assert idx.name == INDEX_NAME
   end
 
   test "search" do
-    idx = server.index("test")
+    idx = server.index(INDEX_NAME)
     idx.create({} of String => JSON::Any)
     events = idx.type("events")
     events.post({data: "some data"})
@@ -59,11 +59,11 @@ describe Soegen::Server do
   end
 
   test "bulk" do
-    server.index("test").create
+    server.index(INDEX_NAME).create
     server.bulk([
-      {create: {_index: "test", _type: "event"}},
+      {create: {_index: INDEX_NAME, _type: "event"}},
       {data: 9000},
-      {create: {_index: "test", _type: "event"}},
+      {create: {_index: INDEX_NAME, _type: "event"}},
       {data: 1337},
     ])
 
@@ -87,7 +87,7 @@ describe Soegen::Server do
     end
 
     server.up?
-    server.index("test").create
+    server.index(INDEX_NAME).create
 
     assert i == 2
   end

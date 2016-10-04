@@ -10,7 +10,7 @@ describe Soegen::Index do
   end
 
   test "create with settings" do
-    idx = server.index("test")
+    idx = server.index(INDEX_NAME)
     config = {
       mappings: {
         mytype: {
@@ -22,18 +22,19 @@ describe Soegen::Index do
     }
     idx.create(config)
 
-    assert idx.get_mapping.body == {test: config}.to_json
+    body = idx.get_mapping.body
+    assert body == {soegen_test: config}.to_json
   end
 
   test "type" do
-    idx = server.index("test")
+    idx = server.index(INDEX_NAME)
     t = idx.type("events")
     assert t.name == "events"
   end
 
   test "search" do
     time = Time.now.to_s
-    idx = server.index("test")
+    idx = server.index(INDEX_NAME)
 
     idx.create({} of String => JSON::Any)
     events = idx.type("events")

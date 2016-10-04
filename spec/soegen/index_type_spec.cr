@@ -2,7 +2,7 @@ require "../spec_helper"
 
 describe Soegen::IndexType do
   test "crud" do
-    idx = server.index("test")
+    idx = server.index(INDEX_NAME)
     t = idx.type("events")
 
     id = t.post({data: 1})
@@ -20,7 +20,7 @@ describe Soegen::IndexType do
 
   test "get raises" do
     begin
-      idx = server.index("test")
+      idx = server.index(INDEX_NAME)
       t = idx.type("events")
       t.get("1337")
     rescue Soegen::RequestError
@@ -31,7 +31,7 @@ describe Soegen::IndexType do
   end
 
   test "exists" do
-    idx = server.index("test")
+    idx = server.index(INDEX_NAME)
     t = idx.type("events")
     assert !t.exists?
     t.post({data: 1})
