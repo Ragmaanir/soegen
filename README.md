@@ -4,7 +4,7 @@ ElasticSearch client for crystal based on the Stretcher gem for ruby.
 
 ## Compatibility
 
-Tests pass with crystal 0.18.0 and ES 2.3.3.
+Tests pass with crystal 0.19.3 and ES 2.4.
 
 ## Installation
 
