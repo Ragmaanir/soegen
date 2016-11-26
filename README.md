@@ -1,10 +1,10 @@
-# soegen
+# soegen [![Build Status](https://travis-ci.org/Ragmaanir/soegen.svg?branch=master)](https://travis-ci.org/Ragmaanir/soegen)
 
 ElasticSearch client for crystal based on the Stretcher gem for ruby.
 
 ## Compatibility
 
-Tests pass with crystal 0.19.3 and ES 2.4.
+Tests pass with crystal 0.20.0 and ES 5.0.1.
 
 ## Installation
 

@@ -5,7 +5,7 @@ require "microtest"
 # Use port 9500 because the setup and teardown methods
 # delete all indices in the instance and that might be bad
 # for some developers who got lots of data in their local instance
-ES_PORT    = 9500
+ES_PORT    = ENV.fetch("ES_PORT", "9500").to_i
 INDEX_NAME = "soegen_test"
 
 class Microtest::Test

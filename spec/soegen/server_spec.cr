@@ -61,9 +61,9 @@ describe Soegen::Server do
   test "bulk" do
     server.index(INDEX_NAME).create
     server.bulk([
-      {create: {_index: INDEX_NAME, _type: "event"}},
+      {index: {_index: INDEX_NAME, _type: "event"}},
       {data: 9000},
-      {create: {_index: INDEX_NAME, _type: "event"}},
+      {index: {_index: INDEX_NAME, _type: "event"}},
       {data: 1337},
     ])
 

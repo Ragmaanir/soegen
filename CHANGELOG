@@ -1,4 +1,10 @@
 
+0.7.0
+
+  - Crystal 0.20.0
+  - Elasticsearch 5
+  - Travis CI
+
 0.6.0
 
   - Crystal 0.18.0

@@ -15,7 +15,7 @@ describe Soegen::Index do
       mappings: {
         mytype: {
           properties: {
-            myfield: {type: "string"},
+            myfield: {type: "text"},
           },
         },
       },
