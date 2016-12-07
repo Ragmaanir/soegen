@@ -8,6 +8,10 @@ require "microtest"
 ES_PORT    = ENV.fetch("ES_PORT", "9500").to_i
 INDEX_NAME = "soegen_test"
 
+# LOGGER     = Logger.new(File.new("log/test.log", "w"))
+# LOGGER.level = Logger::DEBUG
+# LOGGER.formatter = Soegen::Server::DEFAULT_LOG_FORMATTER
+
 class Microtest::Test
   private def server
     @server.not_nil!

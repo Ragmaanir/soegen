@@ -18,6 +18,14 @@ module Soegen
       "Content-Type" => "application/json",
     }
 
+    UTC_TIMESTAMP_FORMAT = Time::Format.new("%FT%XZ")
+
+    DEFAULT_LOG_FORMATTER = Logger::Formatter.new do |severity, datetime, progname, message, io|
+      UTC_TIMESTAMP_FORMAT.format(datetime.to_utc, io)
+      io << " " << Process.pid << " "
+      io << severity.rjust(5) << " " << progname << " " << message
+    end
+
     alias Callback = (CompletedRequest, Timing) ->
 
     getter client, logger
@@ -33,14 +41,20 @@ module Soegen
                    ssl : Bool = false,
                    read_timeout : Time::Span = 2.seconds,
                    connect_timeout : Time::Span = 5.seconds,
-                   logger : Logger = Logger.new(STDOUT))
+                   logger : Logger = Server.default_logger)
       client = HTTP::Client.new(host, port, ssl)
       client.connect_timeout = connect_timeout
       client.read_timeout = read_timeout
       initialize(client, logger)
     end
 
-    def initialize(@client : HTTP::Client, @logger = Logger.new(STDOUT))
+    def initialize(@client : HTTP::Client, @logger = Server.default_logger)
+    end
+
+    def self.default_logger : Logger
+      l = Logger.new(STDOUT)
+      l.formatter = DEFAULT_LOG_FORMATTER
+      l
     end
 
     def request_callback(&@callback : Callback)
@@ -97,7 +111,7 @@ module Soegen
     end
 
     private def log_request(response, timing)
-      str = "[%3dms] %3d: %s" % Tuple.new(
+      str = "%3dms %3d : %s" % Tuple.new(
         timing.duration.milliseconds,
         response.status_code,
         to_curl(response.request)
@@ -116,9 +130,9 @@ module Soegen
       params = request.query_params.to_s
       params = "?" + params if !params.empty?
 
-      body = case request.body
-             when nil, "" then ""
-             else              "-d '#{request.body}'"
+      body = case request.body.to_s
+             when "" then ""
+             else         "-d '#{request.body}'"
              end
 
       "curl -X#{method} #{join_path(uri, path)}#{params} #{body}"
