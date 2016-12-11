@@ -1,4 +1,4 @@
-# soegen [![Build Status](https://travis-ci.org/Ragmaanir/soegen.svg?branch=master)](https://travis-ci.org/Ragmaanir/soegen)
+# soegen [![Build Status](https://travis-ci.org/Ragmaanir/soegen.svg?branch=master)](https://travis-ci.org/Ragmaanir/soegen)[![Dependency Status](https://shards.rocks/badge/github/ragmaanir/soegen/status.svg)](https://shards.rocks/github/ragmaanir/soegen)
 
 ElasticSearch client for crystal based on the Stretcher gem for ruby.
 
