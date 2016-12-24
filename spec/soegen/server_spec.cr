@@ -1,6 +1,8 @@
 require "../spec_helper"
 
 describe Soegen::Server do
+  MATCH_ALL = {query: {match_all: {} of String => String}}
+
   test "initialization" do
     logger = Logger.new(STDOUT)
     server = Soegen::Server.new(
@@ -36,7 +38,7 @@ describe Soegen::Server do
     events.post({data: "some data"})
     idx.refresh
 
-    results = server.search({query: {match_all: {} of String => String}})
+    results = server.search(MATCH_ALL)
 
     assert results.total_count > 0
     assert !results.hits.empty?
@@ -45,7 +47,7 @@ describe Soegen::Server do
   test "search error" do
     begin
       idx = server.index("not_real")
-      idx.search({query: {match_all: {} of String => String}})
+      idx.search(MATCH_ALL)
     rescue Soegen::RequestError
       assert true
     else
@@ -69,7 +71,7 @@ describe Soegen::Server do
 
     server.refresh
 
-    response = server.search({query: {match_all: {} of String => String}})
+    response = server.search(MATCH_ALL)
     assert response.total_count == 2
   end
 
@@ -90,5 +92,18 @@ describe Soegen::Server do
     server.index(INDEX_NAME).create
 
     assert i == 2
+  end
+
+  test "callback error" do
+    r = nil : Soegen::CompletedRequest?
+
+    server.request_callback do |req|
+      r = req
+    end
+
+    server.up?
+    server.index(INDEX_NAME).search(MATCH_ALL) rescue nil
+
+    assert r.not_nil!.status_code == 404
   end
 end

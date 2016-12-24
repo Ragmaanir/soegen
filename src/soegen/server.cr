@@ -78,7 +78,7 @@ module Soegen
       request!(:get, "_stats")
     end
 
-    def bulk(data : Array(T))
+    def bulk(data : Array(T)) forall T
       request!(:post, "_bulk", {} of String => String, data.map { |e| e.to_json + "\n" }.join)
     end
 

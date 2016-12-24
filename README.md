@@ -42,7 +42,23 @@ assert results.total_count == 1
 assert results.hits.first["data"] == "1337"
 ```
 
-For more documentation you can also look at the tests, they are pretty easy to understand.
+For more documentation you can also look at the tests, they are pretty easy to understand. E.g.:
+
+```crystal
+test "callback" do
+    i = 0
+    server.request_callback do |req|
+      i = i + 1
+    end
+
+    server.up?
+    server.index(INDEX_NAME).create
+
+    assert i == 2
+end
+```
+
+The request callback is invoked on every request with response and timing. So you can use that for instrumentation purposes.
 
 ## TODO
 
