@@ -23,7 +23,7 @@ module Soegen
     DEFAULT_LOG_FORMATTER = Logger::Formatter.new do |severity, datetime, progname, message, io|
       UTC_TIMESTAMP_FORMAT.format(datetime.to_utc, io)
       io << " " << Process.pid << " "
-      io << severity.rjust(5) << " " << progname << " " << message
+      io << severity.to_s.rjust(5) << " " << progname << " " << message
     end
 
     alias Callback = (CompletedRequest, Timing) ->

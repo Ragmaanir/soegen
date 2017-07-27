@@ -1,38 +1,37 @@
 module Soegen
   class SearchResult
-
     class Internal
       JSON.mapping({
-        "took" : Int32,
-        "timed_out" : Bool,
-        "_shards" : Shards,
-        "hits" : Hits
+        took:      Int32,
+        timed_out: Bool,
+        _shards:   Shards,
+        hits:      Hits,
       })
     end
 
     class Hits
       JSON.mapping({
-        "total" : Int32,
-        "max_score" : {type: Float64, nilable: true},
-        "hits" : Array(Hit)
+        total:     Int32,
+        max_score: {type: Float64, nilable: true},
+        hits:      Array(Hit),
       })
     end
 
     class Hit
       JSON.mapping({
-        "_index" : String,
-        "_type" : String,
-        "_id" : String,
-        "_score" : Float64,
-        "_source" :  JSON::Any
+        _index:  String,
+        _type:   String,
+        _id:     String,
+        _score:  Float64,
+        _source: JSON::Any,
       })
     end
 
     class Shards
       JSON.mapping({
-        "total" : Int32,
-        "successful" : Int32,
-        "failed" : Int32
+        total:      Int32,
+        successful: Int32,
+        failed:     Int32,
       })
     end
 
@@ -57,12 +56,11 @@ module Soegen
     end
 
     def hits
-      raw_hits.map{ |hit| hit._source.as_h }
+      raw_hits.map { |hit| hit._source.as_h }
     end
 
     def raw
       JSON.parse(@response.body).as_h
     end
-
   end
 end
