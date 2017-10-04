@@ -1,5 +1,6 @@
 module Soegen
   class SearchResult
+    # Internal class for parsing the elasticsearch search response body
     class Internal
       JSON.mapping({
         took:      Int32,
@@ -55,10 +56,12 @@ module Soegen
       @internal.hits.hits
     end
 
+    # returns just the hits of the search result as an array of hashes
     def hits
       raw_hits.map { |hit| hit._source.as_h }
     end
 
+    # returns the complete elasticsearch result with all metadata as a hash
     def raw
       JSON.parse(@response.body).as_h
     end

@@ -1,3 +1,16 @@
+0.10.0
+
+  - README.md.template with embedded and tested examples and a build-script to generate the README.md
+  - enhance spec helper to automatically start and kill elasticsearch
+  - Added a little documentation to some methods
+
+0.9.0
+
+  - crystal 0.23.1
+
+0.8.0
+
+  - extended logging
 
 0.7.0
 

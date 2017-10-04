@@ -1,4 +1,7 @@
 module Soegen
+  # Represents an elasticsearch index and provides methods to get mapping (`#get_mapping`) and
+  # settings (`#get_settings`) of the index as well as methods for `#create`ing/`#delete`ing
+  # the index, checking whether it `#exists?` and for getting a handle to an `#index_type`.
   class Index < Component
     getter server, name
 
@@ -40,6 +43,5 @@ module Soegen
     def uri_path(path : String)
       server.uri_path(join_path(name, path))
     end
-
   end
 end

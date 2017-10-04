@@ -11,7 +11,13 @@ module Soegen
 
   VERBS = %w(GET POST PUT HEAD DELETE)
 
+  # Represents the Elasticsearch server and provides basic methods to check whether the
+  # server is `#up?`, to retrieve an `#index(String)` or to `refresh` all indices.
+  # It is also possible to provide a `request_callback=(Callback)` which is invoked
+  # for every request, so you can hook up your instrumentation which records
+  # request status as well as the `Soegen::Timing`.
   class Server < Component
+    # The default headers used on every request
     REQUEST_HEADERS = {
       "accept"       => "application/json",
       "user_agent"   => "Soegen #{Soegen::VERSION}",
@@ -26,10 +32,11 @@ module Soegen
       io << severity.to_s.rjust(5) << " " << progname << " " << message
     end
 
+    # The type of the `#request_callback`
     alias Callback = (CompletedRequest, Timing) ->
 
     getter client, logger
-    getter callback : Callback?
+    getter request_callback : Callback?
 
     def initialize(uri : String = "http://localhost:9200", *args)
       parsed = URI.parse(uri)
@@ -57,7 +64,10 @@ module Soegen
       l
     end
 
-    def request_callback(&@callback : Callback)
+    def define_callback(&@request_callback : Callback)
+    end
+
+    def request_callback=(@request_callback : Callback)
     end
 
     def refresh
@@ -70,7 +80,7 @@ module Soegen
       false
     end
 
-    def index(name : String)
+    def index(name : String) : Index
       Index.new(self, name)
     end
 
@@ -78,11 +88,26 @@ module Soegen
       request!(:get, "_stats")
     end
 
+    # Makes a `POST` requests to the `_bulk` endpoint of elasticsearch with
+    # the data being the elements of the array converted to
+    # JSON by invoking `Object#to_json` on each entry.
     def bulk(data : Array(T)) forall T
       request!(:post, "_bulk", {} of String => String, data.map { |e| e.to_json + "\n" }.join)
     end
 
-    def request(method : Symbol, path, params = {} of String => String, body : String = "")
+    # def put(path, params = {} of String => String, body : String = "")
+    #   request(:put, path, params, body)
+    # end
+
+    def put(path, *args, **kwargs)
+      request(:put, *args, **kwargs)
+    end
+
+    # Makes a request to elasticsearch and makes sure that the configured UserAgent
+    # is added to the headers, wrapping the result in a `Soegen::CompletedRequest`.
+    # In addition it makes sure that the request is logged and that the configured
+    # `#request_callback` is invoked with the request result and its timing information.
+    def request(method : Symbol, path, params = {} of String => String, body : String = "") : CompletedRequest
       method = method.to_s.upcase
       raise ArgumentError.new("Invalid http verb: #{method}") unless VERBS.includes?(method)
       headers = HTTP::Headers.new
@@ -139,7 +164,7 @@ module Soegen
     end
 
     private def invoke_callback(*args)
-      if c = @callback
+      if c = request_callback
         c.call(*args)
       end
     end

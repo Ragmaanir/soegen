@@ -1,14 +1,17 @@
 module Soegen
+  # Represents an elasticseach index-type and provides the related actions like
+  # `#explain`, `#get`, `#update` and `#delete`.
   class IndexType < Component
     getter index, name
 
+    # This helper class is used to parse the responses from elasticsearch
     class JsonDocument
       JSON.mapping({
-        _id: String,
-        _index: String,
-        _type: String,
+        _id:      String,
+        _index:   String,
+        _type:    String,
         _version: Int32,
-        _source: {type: JSON::Any, nilable: true}
+        _source:  {type: JSON::Any, nilable: true},
       })
     end
 
@@ -43,7 +46,7 @@ module Soegen
       post(source.to_json, *args)
     end
 
-    def post(source : String, options={} of String => String)
+    def post(source : String, options = {} of String => String)
       response = request!(:post, "", options, source)
       JsonDocument.from_json(response.body)._id
     end
@@ -60,9 +63,8 @@ module Soegen
       index.uri_path(join_path(name, path))
     end
 
-    private def server
+    def server
       index.server
     end
-
   end
 end

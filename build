@@ -1,0 +1,12 @@
+#!/usr/bin/env crystal
+
+require "ecr"
+require "./src/soegen/version"
+
+puts "Building"
+
+class Readme
+  ECR.def_to_s "README.md.template"
+end
+
+File.write("README.md", Readme.new.to_s)

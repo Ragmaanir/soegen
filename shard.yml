@@ -12,6 +12,6 @@ authors:
 development_dependencies:
   microtest:
     github: ragmaanir/microtest
-    branch: master
+    version: ~> 1.0.0
 
 license: MIT

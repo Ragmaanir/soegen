@@ -3,6 +3,7 @@
 /log/
 /.crystal/
 /.shards/
+/temp/
 
 
 # Libraries don't need dependency lock

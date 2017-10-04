@@ -1,0 +1,76 @@
+# soegen [![Build Status](https://travis-ci.org/Ragmaanir/soegen.svg?branch=master)](https://travis-ci.org/Ragmaanir/soegen)[![Dependency Status](https://shards.rocks/badge/github/ragmaanir/soegen/status.svg)](https://shards.rocks/github/ragmaanir/soegen)
+
+ElasticSearch client for crystal based on the Stretcher gem for ruby.
+
+### Version <%= Soegen::VERSION %>
+
+## Compatibility
+
+Tests pass with crystal 0.23.1 and ES 5.0.1.
+
+## Installation
+
+Add this to your application's `shard.yml`:
+
+```yaml
+dependencies:
+  soegen:
+    github: ragmaanir/soegen
+    version: ~> <%= Soegen::VERSION %>
+```
+
+And then do:
+
+```crystal
+require "soegen"
+```
+
+## Usage
+
+```crystal
+<%= File.read("./spec/soegen/example_spec.cr") %>
+```
+
+## Testing
+
+The ES configuration used in the tests is in `"./spec/config/`:
+
+```yaml
+<%= File.read("./spec/config/elasticsearch.yml") %>
+```
+
+Also the `spec_helper.cr` configures an index template to set the number of shards and replicas. To run the tests you have to provide your ES executable/command:
+
+```bash
+SOEGEN_ES_CMD=es5 crystal spec
+```
+
+It then automatically starts the server with the above config.
+
+## TODO
+
+- [x] Indexes and IndexTypes: CRUD
+- [x] Index documents
+- [x] Index documents in bulk
+- [x] Search for documents and return hit array
+- [x] Log requests (as curl commands)
+- [x] General callback for each request (for e.g. instrumentation)
+- [ ] Analyzer API
+- [ ] Alias API
+- [ ] Tests for child documents
+
+## Missing a feature? Found a bug? Need more documentation?
+
+Please open an issue on this project.
+
+## Contributing
+
+1. Fork it ( https://github.com/ragmaanir/soegen/fork )
+2. Create your feature branch (git checkout -b my-new-feature)
+3. Commit your changes (git commit -am 'Add some feature')
+4. Push to the branch (git push origin my-new-feature)
+5. Create a new Pull Request
+
+## Contributors
+
+- [Ragmaanir](https://github.com/ragmaanir) - creator, maintainer

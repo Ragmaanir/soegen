@@ -12,10 +12,13 @@ module Soegen
       SearchResult.new(response)
     end
 
-    def request(method : Symbol, path : String = "", params={} of String => String, body : String = "")
+    # Delegates to `Soegen::Server#request(Symbol,String,String => String, String)`
+    def request(method : Symbol, path : String = "", params = {} of String => String, body : String = "") : CompletedRequest
       server.request(method, uri_path(path), params, body)
     end
 
+    # Like `#request(Symbol,String,String => String, String)` but raises an `Soegen::RequestError`
+    # if the status code is not `Soegen::CompletedRequest#ok_ish?`.
     def request!(*args)
       response = request(*args)
 
@@ -26,14 +29,14 @@ module Soegen
       response
     end
 
-    private abstract def server : Server
+    abstract def server : Server
 
     # Dont put a / at the end if child is empty, so that parameters can be appended with ?
     private def join_path(parent : String, child : String)
       if child.empty?
         parent
       else
-        [parent,child].join("/")
+        [parent, child].join("/")
       end
     end
   end

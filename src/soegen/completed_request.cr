@@ -1,9 +1,10 @@
 require "json"
 
 module Soegen
+  # Stores a completed request, including the `HTTP::Request` as well as the `HTTP::Client::Response`
   class CompletedRequest
     getter response, request
-    delegate method, path, to: request
+    delegate method, path, host, to: request
     delegate status_code, body, to: response
 
     def initialize(@request : HTTP::Request, @response : HTTP::Client::Response)

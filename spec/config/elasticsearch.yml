@@ -1,18 +1,16 @@
-cluster.name: es_soegen_2_0_0_test
+cluster.name: es_soegen_5_0_0_test # avoid to join other clusters
 cluster.routing.allocation.disk.watermark.low: 500mb
 cluster.routing.allocation.disk.watermark.high: 200mb
 
 node.name: main_test
 node.max_local_storage_nodes: 1
 
-index.number_of_shards: 1
-index.number_of_replicas: 0
-index.stores.type: memory
-
-network.host: 127.0.0.1
-http.port: 9500
+http.port: ${ES_PORT}
 
 gateway.recover_after_nodes: 1
 
 discovery.zen.minimum_master_nodes: 1
 discovery.zen.ping.unicast.hosts: []
+
+path.logs: ${SOEGEN_PATH}/temp/elasticsearch/logs
+path.data: ${SOEGEN_PATH}/temp/elasticsearch/data

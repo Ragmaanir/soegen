@@ -2,6 +2,8 @@
 
 ElasticSearch client for crystal based on the Stretcher gem for ruby.
 
+### Version 0.9.0
+
 ## Compatibility
 
 Tests pass with crystal 0.23.1 and ES 5.0.1.
@@ -14,51 +16,117 @@ Add this to your application's `shard.yml`:
 dependencies:
   soegen:
     github: ragmaanir/soegen
+    version: ~> 0.9.0
+```
+
+And then do:
+
+```crystal
+require "soegen"
 ```
 
 ## Usage
 
 ```crystal
-require "soegen"
+require "../spec_helper"
 
-server = Soegen::Server.new # defaults to localhost:9200
-idx = server.index("test")
+describe Example do
+  test "basic setup" do
+    logger = Logger.new(STDOUT)
+    server = Soegen::Server.new(
+      host: "localhost",
+      port: ES_PORT, # defaults to localhost:9200
+      ssl: false,
+      read_timeout: (0.5).seconds,
+      connect_timeout: 1.seconds,
+      logger: logger
+    )
 
-assert !idx.exists?
+    assert server.up?
+    assert server.client.host == "localhost"
+    assert server.client.port == ES_PORT
+    assert server.logger == logger
+    assert !server.client.tls?
 
-idx.create
+    idx = server.index(INDEX_NAME)
 
-assert idx.exists?
+    assert !idx.exists?
 
-t = idx.type("events")
+    idx.create
 
-t.post({data: "1337"})
+    assert idx.exists?
 
-idx.refresh
+    t = idx.type("events")
 
-results = t.search({query: {match: {data: "1337"}}})
+    t.post({data: "1337"})
 
-assert results.total_count == 1
-assert results.hits.first["data"] == "1337"
-```
+    idx.refresh
 
-For more documentation you can also look at the tests, they are pretty easy to understand. E.g.:
+    results = t.search({query: {match: {data: "1337"}}})
 
-```crystal
-test "callback" do
-    i = 0
-    server.request_callback do |req|
-      i = i + 1
+    assert results.total_count == 1
+    assert results.hits.first["data"] == "1337"
+  end
+
+  test "generic request callback" do
+    requests = [] of {req: Soegen::CompletedRequest, timing: Soegen::Timing}
+    server.define_callback do |req, timing|
+      requests << {req: req, timing: timing} # you could do your instrumentation here
     end
 
     server.up?
     server.index(INDEX_NAME).create
 
-    assert i == 2
+    assert requests.size == 2
+    assert requests.all? { |pair| pair[:timing].duration < 1.second }
+
+    up_request = requests[0][:req]
+
+    assert up_request.method == "GET"
+    assert up_request.path == "/"
+    assert up_request.ok_ish?
+
+    create_request = requests[1][:req]
+
+    assert create_request.method == "PUT"
+    assert create_request.path == INDEX_NAME
+    assert create_request.ok_ish?
+  end
 end
+
 ```
 
-The request callback is invoked on every request with response and timing. So you can use that for instrumentation purposes.
+## Testing
+
+The ES configuration used in the tests is in `"./spec/config/`:
+
+```yaml
+cluster.name: es_soegen_5_0_0_test # avoid to join other clusters
+cluster.routing.allocation.disk.watermark.low: 500mb
+cluster.routing.allocation.disk.watermark.high: 200mb
+
+node.name: main_test
+node.max_local_storage_nodes: 1
+
+http.port: ${ES_PORT}
+
+gateway.recover_after_nodes: 1
+
+discovery.zen.minimum_master_nodes: 1
+discovery.zen.ping.unicast.hosts: []
+
+path.logs: ${SOEGEN_PATH}/temp/elasticsearch/logs
+path.data: ${SOEGEN_PATH}/temp/elasticsearch/data
+
+```
+
+Also the `spec_helper.cr` configures an index template to set the number of shards and replicas. To run the tests you have to provide your ES executable/command:
+
+```bash
+SOEGEN_ES_CMD=es5 crystal spec
+```
+
+It then automatically starts the server with the above config.
 
 ## TODO
 

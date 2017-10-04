@@ -61,7 +61,8 @@ describe Soegen::Server do
   end
 
   test "bulk" do
-    server.index(INDEX_NAME).create
+    idx = server.index(INDEX_NAME)
+    idx.create
     server.bulk([
       {index: {_index: INDEX_NAME, _type: "event"}},
       {data: 9000},
@@ -71,7 +72,7 @@ describe Soegen::Server do
 
     server.refresh
 
-    response = server.search(MATCH_ALL)
+    response = idx.search(MATCH_ALL)
     assert response.total_count == 2
   end
 
@@ -84,7 +85,7 @@ describe Soegen::Server do
 
   test "callback" do
     i = 0
-    server.request_callback do |req|
+    server.define_callback do |req|
       i = i + 1
     end
 
@@ -97,7 +98,7 @@ describe Soegen::Server do
   test "callback error" do
     r = nil : Soegen::CompletedRequest?
 
-    server.request_callback do |req|
+    server.define_callback do |req|
       r = req
     end
 
