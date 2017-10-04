@@ -7,6 +7,7 @@ require "microtest"
 # for some developers because they might lose data in their local instance
 ES_PORT     = ENV.fetch("ES_PORT", "9500").to_i
 ES_CMD      = ENV.fetch("SOEGEN_ES_CMD")
+TRAVIS      = ENV.fetch("TRAVIS", "false") == "true"
 SOEGEN_PATH = File.expand_path(Dir.current)
 INDEX_NAME  = "soegen_test"
 
@@ -23,35 +24,36 @@ def self.wait_for(msg = "Timeout", tries = 5, &block : -> Bool)
   raise msg
 end
 
-env = {
-  "SOEGEN_ES_CMD" => ES_CMD,
-  "SOEGEN_PATH"   => SOEGEN_PATH,
-  "ES_PORT"       => ES_PORT.to_s,
-}
-
 es_proc = nil
 
-begin
-  es_process = Process.new(ES_CMD, ["-Epath.conf=#{SOEGEN_PATH}/spec/config"], env: env, output: false, error: true)
-  es_server = Soegen::Server.new("localhost", ES_PORT)
+if !TRAVIS
+  begin
+    env = {
+      "SOEGEN_ES_CMD" => ES_CMD,
+      "SOEGEN_PATH"   => SOEGEN_PATH,
+      "ES_PORT"       => ES_PORT.to_s,
+    }
 
-  wait_for("Timeout trying to reach elasticsearch on port #{ES_PORT}", tries: 10) do
-    raise "Elasticsearch terminated" if es_process.terminated?
-    es_server.up?
+    es_process = Process.new(ES_CMD, ["-Epath.conf=#{SOEGEN_PATH}/spec/config"], env: env, output: false, error: true)
+
+    wait_for("Timeout trying to reach elasticsearch on port #{ES_PORT}", tries: 10) do
+      raise "Elasticsearch terminated" if es_process.terminated?
+      Soegen::Server.new("localhost", ES_PORT).up?
+    end
+
+    es_proc = es_process
+  rescue
+    es_proc.try(&.kill)
   end
-
-  es_server.put("_template/test_template", body: {
-    template: "soegen_*",
-    settings: {
-      number_of_shards:   1,
-      number_of_replicas: 0,
-    },
-  }.to_json)
-
-  es_proc = es_process
-rescue
-  es_proc.not_nil!.kill
 end
+
+Soegen::Server.new("localhost", ES_PORT).put("_template/test_template", body: {
+  template: "soegen_*",
+  settings: {
+    number_of_shards:   1,
+    number_of_replicas: 0,
+  },
+}.to_json)
 
 class Microtest::Test
   private def server
@@ -75,7 +77,7 @@ include Microtest::DSL
 begin
   success = Microtest.run
 ensure
-  es_proc.not_nil!.kill
+  es_proc.try(&.kill)
 end
 
 exit success ? 0 : -1

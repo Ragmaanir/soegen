@@ -4,15 +4,18 @@ branches:
   - master
   - dev
 env:
-  - ES_PORT=9200 JAVA_HOME=/usr/lib/jvm/java-8-oracle SOEGEN_ES_CMD=/tmp/elasticsearch-5.0.1/bin/elasticsearch
+  global:
+    - ES_VERSION=5.1.1
+    - ES_PORT=9200
+    - JAVA_HOME=/usr/lib/jvm/java-8-oracle
+    - SOEGEN_ES_CMD=/tmp/elasticsearch-$ES_VERSION/bin/elasticsearch
 addons:
   apt:
     packages:
       - oracle-java8-installer
+
 before_install:
-  - sudo apt-get install oracle-java8-set-default
-  - sudo  update-java-alternatives --set java-8-oracle
-  - curl -s https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.0.1.tar.gz | tar xz -C /tmp || true
-# before_script:
-#   - /tmp/elasticsearch-5.0.1/bin/elasticsearch -d
-#   - sleep 10
+  - curl -O https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.1.1.deb
+  - sudo dpkg -i --force-confnew elasticsearch-5.1.1.deb
+  - sudo service elasticsearch start
+  - sleep 5
