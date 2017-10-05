@@ -2,7 +2,7 @@
 
 ElasticSearch client for crystal based on the Stretcher gem for ruby.
 
-### Version 0.9.0
+### Version 0.10.0
 
 ## Compatibility
 
@@ -16,7 +16,7 @@ Add this to your application's `shard.yml`:
 dependencies:
   soegen:
     github: ragmaanir/soegen
-    version: ~> 0.9.0
+    version: ~> 0.10.0
 ```
 
 And then do:
