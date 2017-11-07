@@ -1,7 +1,7 @@
 #!/usr/bin/env crystal
 
 require "ecr"
-require "./src/soegen/version"
+require "../src/soegen/version"
 
 puts "Building"
 

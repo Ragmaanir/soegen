@@ -34,7 +34,7 @@ if !TRAVIS
       "ES_PORT"       => ES_PORT.to_s,
     }
 
-    es_process = Process.new(ES_CMD, ["-Epath.conf=#{SOEGEN_PATH}/spec/config"], env: env, output: false, error: true)
+    es_process = Process.new(ES_CMD, ["-Epath.conf=#{SOEGEN_PATH}/spec/config"], env: env, output: Process::Redirect::Close, error: Process::Redirect::Pipe)
 
     wait_for("Timeout trying to reach elasticsearch on port #{ES_PORT}", tries: 10) do
       raise "Elasticsearch terminated" if es_process.terminated?
