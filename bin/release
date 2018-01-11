@@ -1,7 +1,7 @@
 #!/usr/bin/env crystal
 
 require "yaml"
-require "../src/kontrol/version"
+require "../src/soegen/version"
 
 def run(cmd, args = [] of String, msg = "Command failed: #{cmd} #{args.join(" ")}")
   puts "Running: #{cmd} #{args.join(" ")}"
