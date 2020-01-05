@@ -1,4 +1,4 @@
-cluster.name: es_soegen_5_0_0_test # avoid to join other clusters
+cluster.name: es_soegen_7_3_0_test # avoid to join other clusters
 cluster.routing.allocation.disk.watermark.low: 500mb
 cluster.routing.allocation.disk.watermark.high: 200mb
 

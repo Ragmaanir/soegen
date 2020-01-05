@@ -1,3 +1,3 @@
 module Soegen
-  VERSION = "0.12.0"
+  VERSION = {{ `shards version #{__DIR__}`.strip.stringify }}
 end

@@ -77,7 +77,7 @@ describe Soegen::Server do
   end
 
   test "up?" do
-    server = Soegen::Server.new("http://localhost:9000")
+    server = Soegen::Server.new("http://localhost", 9000)
     assert !server.up?
     server = Soegen::Server.new("http://localhost:#{ES_PORT}")
     assert server.up?

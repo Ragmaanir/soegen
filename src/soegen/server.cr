@@ -35,12 +35,13 @@ module Soegen
     # The type of the `#request_callback`
     alias Callback = (CompletedRequest, Timing) ->
 
-    getter client, logger
+    getter client : HTTP::Client
+    getter logger : Logger
     getter request_callback : Callback?
 
-    def initialize(uri : String = "http://localhost:9200", *args)
+    def initialize(uri : String = "http://localhost:9200", **args)
       parsed = URI.parse(uri)
-      initialize(parsed.host.not_nil!, parsed.port.not_nil!, parsed.scheme == "https", *args)
+      initialize(parsed.host.not_nil!, parsed.port.not_nil!, parsed.scheme == "https", **args)
     end
 
     def initialize(host : String,
@@ -55,7 +56,7 @@ module Soegen
       initialize(client, logger)
     end
 
-    def initialize(@client : HTTP::Client, @logger = Server.default_logger)
+    def initialize(@client, @logger = Server.default_logger)
     end
 
     def self.default_logger : Logger
@@ -131,7 +132,7 @@ module Soegen
       "#{scheme}://#{client.host}:#{client.port}"
     end
 
-    def server
+    def server : Server
       self
     end
 
@@ -146,7 +147,7 @@ module Soegen
     end
 
     private def params_to_query_params(hash : Hash(String, String))
-      hash.map { |k, v| "#{URI.escape(k)}=#{URI.escape(v)}" }.join("&")
+      hash.map { |k, v| "#{URI.encode_www_form(k)}=#{URI.encode_www_form(v)}" }.join("&")
     end
 
     private def to_curl(request : HTTP::Request)
@@ -170,12 +171,12 @@ module Soegen
     end
 
     private def timed(&block)
-      start = Time.new
+      start = Time.local
       result = yield
-      Tuple.new(Timing.new(start, Time.new), result)
+      Tuple.new(Timing.new(start, Time.local), result)
     end
 
-    def uri_path(path : String)
+    def uri_path(path : String) : String
       path
     end
 

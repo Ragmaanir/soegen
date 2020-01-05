@@ -33,7 +33,7 @@ describe Soegen::Index do
   end
 
   test "search" do
-    time = Time.now.to_s
+    time = Time.local.to_s
     idx = server.index(INDEX_NAME)
 
     idx.create({} of String => JSON::Any)
