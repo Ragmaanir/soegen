@@ -34,7 +34,7 @@ describe Example do
 
     results = t.search({query: {match: {data: "1337"}}})
 
-    assert results.total_count == 1
+    assert results.total_count.value == 1
     assert results.hits.first["data"] == "1337"
   end
 

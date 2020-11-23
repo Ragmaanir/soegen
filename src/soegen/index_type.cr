@@ -7,13 +7,13 @@ module Soegen
 
     # This helper class is used to parse the responses from elasticsearch
     class JsonDocument
-      JSON.mapping({
-        _id:      String,
-        _index:   String,
-        _type:    String,
-        _version: Int32,
-        _source:  {type: JSON::Any, nilable: true},
-      })
+      include JSON::Serializable
+
+      getter _id : String
+      getter _index : String
+      getter _type : String
+      getter _version : Int32
+      getter _source : JSON::Any?
     end
 
     def initialize(@index, @name)

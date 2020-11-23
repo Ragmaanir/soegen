@@ -40,7 +40,7 @@ describe Soegen::Server do
 
     results = server.search(MATCH_ALL)
 
-    assert results.total_count > 0
+    assert results.total_count.value > 0
     assert !results.hits.empty?
   end
 
@@ -73,11 +73,11 @@ describe Soegen::Server do
     server.refresh
 
     response = idx.search(MATCH_ALL)
-    assert response.total_count == 2
+    assert response.total_count.value == 2
   end
 
   test "up?" do
-    server = Soegen::Server.new("http://localhost", 9000)
+    server = Soegen::Server.new("localhost", 9000)
     assert !server.up?
     server = Soegen::Server.new("http://localhost:#{ES_PORT}")
     assert server.up?

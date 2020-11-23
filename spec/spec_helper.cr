@@ -1,5 +1,6 @@
 require "../src/soegen"
 
+require "file_utils"
 require "microtest"
 
 # Use port 9500 because the setup and teardown methods
@@ -10,6 +11,7 @@ ES_PORT = ENV.fetch("ES_PORT", "9200").to_i
 TRAVIS      = ENV.fetch("TRAVIS", "false") == "true"
 SOEGEN_PATH = File.expand_path(Dir.current)
 INDEX_NAME  = "soegen_test"
+CID_FILE    = "temp/es.cid"
 
 # LOGGER     = Logger.new(File.new("log/test.log", "w"))
 # LOGGER.level = Logger::DEBUG
@@ -28,41 +30,28 @@ es_proc = nil
 
 if !TRAVIS
   begin
-    # env = {
-    #   "SOEGEN_ES_CMD" => ES_CMD,
-    #   "SOEGEN_PATH" => SOEGEN_PATH,
-    #   "ES_PORT"     => ES_PORT.to_s,
-    # }
-
-    # es_process = Process.new(ES_CMD, ["-Epath.conf=#{SOEGEN_PATH}/spec/config"], env: env, output: Process::Redirect::Close, error: Process::Redirect::Pipe)
-    # es_process = Process.new(
-    #   "sudo",
-    #   ["docker", "run", "-p", "#{ES_PORT}:#{ES_PORT}", "-e", %{"discovery.type=single-node"}, "docker.elastic.co/elasticsearch/elasticsearch:7.5.1"],
-    #   # env: env,
-    #   output: Process::Redirect::Close,
-    #   error: Process::Redirect::Pipe
-    # )
-
-    Process.run(
+    es_process = Process.new(
       "sudo",
-      ["docker", "run", "-p", "#{ES_PORT}:#{ES_PORT}", "-e", "\"discovery.type=single-node\"", "docker.elastic.co/elasticsearch/elasticsearch:7.5.1"],
-      # env: env,
-      output: STDOUT,
+      [
+        "docker", "run",
+        "-p", "#{ES_PORT}:#{ES_PORT}",
+        "-e", "discovery.type=single-node",
+        "--cidfile", CID_FILE,
+        "docker.elastic.co/elasticsearch/elasticsearch:7.5.1",
+      ],
+      # output: STDOUT,
       error: STDOUT
     )
 
-    puts "AAAA"
-    sleep 5
+    wait_for("Timeout trying to reach elasticsearch on port #{ES_PORT}", tries: 20) do
+      # raise "Elasticsearch terminated" if es_process.terminated?
+      Soegen::Server.new("localhost", ES_PORT).up?
+    end
 
-    # wait_for("Timeout trying to reach elasticsearch on port #{ES_PORT}", tries: 10) do
-    #   raise "Elasticsearch terminated" if es_process.terminated?
-    #   Soegen::Server.new("localhost", ES_PORT).up?
-    # end
-
-    # es_proc = es_process
+    es_proc = es_process
   rescue
     puts "ERROR -> killing ES process"
-    # es_proc.try(&.kill)
+    es_proc.try(&.terminate)
   end
 end
 
@@ -96,7 +85,11 @@ include Microtest::DSL
 begin
   success = Microtest.run
 ensure
-  es_proc.try(&.kill)
+  if es_proc
+    cid = File.read(CID_FILE)
+    Process.run("sudo", ["docker", "stop", cid])
+    FileUtils.rm(CID_FILE)
+  end
 end
 
 exit success ? 0 : -1

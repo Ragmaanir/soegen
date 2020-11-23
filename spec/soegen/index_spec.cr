@@ -13,11 +13,11 @@ describe Soegen::Index do
     idx = server.index(INDEX_NAME)
     config = {
       mappings: {
-        mytype: {
-          properties: {
-            myfield: {type: "text"},
-          },
+        # mytype: {
+        properties: {
+          myfield: {type: "text"},
         },
+        # },
       },
     }
     idx.create(config)
@@ -47,7 +47,7 @@ describe Soegen::Index do
 
     results = idx.search({query: {match: {data: time}}})
 
-    assert results.total_count > 0
+    assert results.total_count.value > 0
     assert !results.hits.empty?
     hit = results.hits.first
     assert hit["data"] == time

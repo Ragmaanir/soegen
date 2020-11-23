@@ -77,7 +77,7 @@ module Soegen
 
     def up?
       request(:get, "").ok_ish?
-    rescue e : Errno
+    rescue
       false
     end
 

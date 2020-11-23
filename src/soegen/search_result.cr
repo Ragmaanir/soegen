@@ -2,38 +2,45 @@ module Soegen
   class SearchResult
     # Internal class for parsing the elasticsearch search response body
     class Internal
-      JSON.mapping({
-        took:      Int32,
-        timed_out: Bool,
-        _shards:   Shards,
-        hits:      Hits,
-      })
+      include JSON::Serializable
+
+      getter took : Int32
+      getter timed_out : Bool
+      getter _shards : Shards
+      getter hits : Hits
     end
 
     class Hits
-      JSON.mapping({
-        total:     Int32,
-        max_score: {type: Float64, nilable: true},
-        hits:      Array(Hit),
-      })
+      include JSON::Serializable
+
+      getter total : HitEstimate
+      getter max_score : Float64?
+      getter hits : Array(Hit)
+    end
+
+    class HitEstimate
+      include JSON::Serializable
+
+      getter value : Int32
+      getter relation : String
     end
 
     class Hit
-      JSON.mapping({
-        _index:  String,
-        _type:   String,
-        _id:     String,
-        _score:  Float64,
-        _source: JSON::Any,
-      })
+      include JSON::Serializable
+
+      getter _index : String
+      getter _type : String
+      getter _id : String
+      getter _score : Float64
+      getter _source : JSON::Any
     end
 
     class Shards
-      JSON.mapping({
-        total:      Int32,
-        successful: Int32,
-        failed:     Int32,
-      })
+      include JSON::Serializable
+
+      getter total : Int32
+      getter successful : Int32
+      getter failed : Int32
     end
 
     def initialize(@response : CompletedRequest)
@@ -49,7 +56,7 @@ module Soegen
     end
 
     def present?
-      total_count > 0
+      total_count.value > 0
     end
 
     def raw_hits
